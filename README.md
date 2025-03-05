@@ -52,3 +52,73 @@ export default tseslint.config({
   },
 })
 ```
+You need to add a file named "data".
+Inside this file, add your quiz like this
+```js
+{
+  "quiz": {
+    "title": "Test quiz",
+    "description": "Ceci est un test",
+    "count_number_questions": {
+      "value": 2
+    },
+    "questions": [
+      {
+        "id": "_vzSeSoQWbjyf",
+        "type": "SINGLE",
+        "content": "Test question 1",
+        "count_number_answers": {
+          "value": 3
+        },
+        "answers": [
+          {
+            "id": "_M22UhmfrimhX",
+            "content": "Choix 1",
+            "isCorrect": false
+          },
+          {
+            "id": "_ObEUMSAKDtlB",
+            "content": "Choix 2",
+            "isCorrect": true
+          },
+          {
+            "id": "_75FrxzTKQK3N",
+            "content": "Choix 3",
+            "isCorrect": false
+          }
+        ]
+      },
+      {
+        "id": "_be1NBxAApoi4",
+        "type": "MULTIPLE",
+        "content": "Question 2",
+        "count_number_answers": {
+          "value": 4
+        },
+        "answers": [
+          {
+            "id": "_qUwvOn9KmAFC",
+            "content": "Choix 2",
+            "isCorrect": false
+          },
+          {
+            "id": "_TOoPHcMQgPxt",
+            "content": "Choix 3",
+            "isCorrect": true
+          },
+          {
+            "id": "_9daobm8o7K1X",
+            "content": "Choix 4",
+            "isCorrect": false
+          },
+          {
+            "id": "_jnNXnbaaLYMN",
+            "content": "Choix 1",
+            "isCorrect": true
+          }
+        ]
+      }
+    ]
+  }
+}
+```
