@@ -10,7 +10,7 @@ export const AnswersSchema = z.array(AnswerSchema);
 
 export const QuestionSchema = z.object({
   id: z.string(),
-  type: z.enum(["SINGLE", "MULTIPLE"]),
+  type: z.string(),
   content: z.string(),
   count_number_answers: z.object({
     value: z.number(),
@@ -21,7 +21,6 @@ export const QuestionSchema = z.object({
 export const QuestionsSchema = z.array(QuestionSchema);
 
 export const QuizSchema = z.object({
-  id: z.string(),
   title: z.string(),
   description: z.string(),
   count_number_questions: z.object({
