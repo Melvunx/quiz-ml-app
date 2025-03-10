@@ -1,8 +1,18 @@
+import clsx from "clsx";
 import { FC, useEffect, useMemo, useState } from "react";
 import { Quiz } from "../schema/quiz";
 import ResultsQuiz from "./ResultsQuiz";
-import Button from "./ui/Button";
-import Progress from "./ui/Progress";
+import { Button, buttonVariants } from "./ui/Button";
+import { Progress } from "./ui/Progress";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 
 type LoadedQuizProps = {
   quiz: Quiz;
@@ -39,29 +49,17 @@ const LoadedQuiz: FC<LoadedQuizProps> = ({ quiz, onFinish }) => {
   const questions = quiz.questions.map((q) => q);
   const currentQuestion = questions[currentQuestionIndex];
 
-  const handleToggleChange = (questionId: string, answerId: string) => {
-    setUserAnswers((prev) => {
-      const currentAnswers = prev[questionId] || [];
+  const handleToggleChange = (questionId: string, answers: string[]) => {
+    const question = questions.find((q) => q.id === questionId);
 
-      if (currentQuestion.type === "SINGLE") {
-        return {
-          ...prev,
-          [questionId]: [answerId],
-        };
-      } else {
-        if (currentAnswers.includes(answerId)) {
-          return {
-            ...prev,
-            [questionId]: currentAnswers.filter((id) => id !== answerId),
-          };
-        } else {
-          return {
-            ...prev,
-            [questionId]: [...currentAnswers, answerId],
-          };
-        }
-      }
-    });
+    if (!question) return;
+
+    const valueArray = typeof answers === "string" ? [answers] : answers;
+
+    setUserAnswers((prev) => ({
+      ...prev,
+      [questionId]: valueArray,
+    }));
   };
 
   const finishQuiz = (finalAnswers: Record<string, string[]>) => {
@@ -115,76 +113,91 @@ const LoadedQuiz: FC<LoadedQuizProps> = ({ quiz, onFinish }) => {
   const selectedValues = userAnswers[currentQuestion.id] || [];
 
   return (
-    <div className="card">
-      <div className="card-body">
-        <h2 className="card-title">
+    <Card className="w-full max-w-lg">
+      <CardHeader>
+        <CardTitle>
           {quiz.title} - Question n°{currentQuestionIndex + 1}
-        </h2>
-        <div className="flex items-center">
-          <Progress value={calculateProgress()} />
-        </div>
+        </CardTitle>
+      </CardHeader>
+      <div className="flex items-center">
+        <Progress value={calculateProgress()} />
+        <span>{Math.ceil(calculateProgress())}%</span>
+      </div>
+      <CardContent>
         <div className="my-4">
           <p className="text-lg font-medium">{currentQuestion.content}</p>
-          <p className="text-sm italic text-gray-600 mt-1">
+          <CardDescription>
             {currentQuestion.type === "SINGLE"
               ? "Choisissez une seule réponse"
               : "Sélectionnez toutes les réponses correctes"}
-          </p>
+          </CardDescription>
         </div>
-        <div className="flex flex-col gap-3 my-4">
-          {currentQuestion.answers.map((answer) => {
-            const isSelected = selectedValues.includes(answer.id);
-
-            return (
-              <label
-                key={answer.id}
-                htmlFor={answer.id}
-                className={`btn ${
-                  isSelected ? "btn-primary" : "btn-secondary"
-                }`}
-                onClick={() =>
-                  handleToggleChange(currentQuestion.id, answer.id)
-                }
-              >
-                <input
-                  id={answer.id}
-                  checked={isSelected}
-                  onChange={() => {}}
-                  className="hidden"
-                  type={
-                    currentQuestion.type === "SINGLE" ? "radio" : "checkbox"
-                  }
-                />
-                <div
-                  className={`size-6 flex items-center justify-center rounded-full border mr-3
-                    ${
-                      isSelected
-                        ? "bg-blue-500 border-blue-500 text-white"
-                        : "border-gray-400"
-                    }
-                    `}
-                >
-                  {isSelected &&
-                    (currentQuestion.type === "SINGLE" ? "●" : "✓")}
-                </div>
-                <span>{answer.content}</span>
-              </label>
-            );
-          })}
-        </div>
-        <div className="card-actions justify-end mt-4">
-          <Button
-            variant="btn-primary"
-            onClick={handleNextQuestion}
-            disabled={!selectedValues.length}
+        {currentQuestion.type === "SINGLE" ? (
+          <ToggleGroup
+            type="single"
+            value={userAnswers[currentQuestion.id]?.[0] || ""}
+            className="space-y-4"
+            onValueChange={(values) =>
+              handleToggleChange(currentQuestion.id, [values])
+            }
           >
-            {currentQuestionIndex < questions.length - 1
-              ? "Question suivante"
-              : "Terminer le quiz"}
-          </Button>
-        </div>
-      </div>
-    </div>
+            {currentQuestion.answers.map((answer) => (
+              <ToggleGroupItem
+                key={answer.id}
+                value={answer.id}
+                className={clsx(
+                  "w-full",
+                  buttonVariants({
+                    variant: "default",
+                    size: "sm",
+                    className: "border-2 border-black",
+                  })
+                )}
+              >
+                {answer.content}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        ) : (
+          <ToggleGroup
+            type="multiple"
+            value={selectedValues}
+            className="space-y-2"
+            onValueChange={(values) =>
+              handleToggleChange(currentQuestion.id, values)
+            }
+          >
+            {currentQuestion.answers.map((answer) => (
+              <ToggleGroupItem
+                key={answer.id}
+                value={answer.id}
+                className={clsx(
+                  "w-full",
+                  buttonVariants({
+                    variant: "default",
+                    size: "sm",
+                    className: "border-2 border-black",
+                  })
+                )}
+              >
+                {answer.content}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        )}
+      </CardContent>
+      <CardFooter>
+        <Button
+          variant="destructive"
+          onClick={handleNextQuestion}
+          disabled={!selectedValues.length}
+        >
+          {currentQuestionIndex < questions.length - 1
+            ? "Question suivante"
+            : "Terminer le quiz"}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
 
