@@ -138,7 +138,7 @@ const LoadedQuiz: FC<LoadedQuizProps> = ({ quiz, onFinish }) => {
           <ToggleGroup
             type="single"
             value={userAnswers[currentQuestion.id]?.[0] || ""}
-            className=" space-x-4 py-3 w-4/5 mx-auto"
+            className="space-x-4 py-3 w-4/5 mx-auto max-lg:flex-col max-lg:space-x-0 max-lg:gap-5"
             onValueChange={(values) =>
               handleToggleChange(currentQuestion.id, [values])
             }
@@ -164,7 +164,7 @@ const LoadedQuiz: FC<LoadedQuizProps> = ({ quiz, onFinish }) => {
           <ToggleGroup
             type="multiple"
             value={selectedValues}
-            className="w-full py-3 flex gap-4 max-lg:flex-col "
+            className="w-full py-3 flex gap-4 max-lg:flex-col"
             onValueChange={(values) =>
               handleToggleChange(currentQuestion.id, values)
             }
