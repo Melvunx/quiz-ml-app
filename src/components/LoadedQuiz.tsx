@@ -108,25 +108,27 @@ const LoadedQuiz: FC<LoadedQuizProps> = ({ quiz, onFinish }) => {
     return ((currentQuestionIndex + 1) / questions.length) * 100;
   };
 
-  if (showResults) return <ResultsQuiz />;
+  if (showResults) return <ResultsQuiz quiz={quiz} userAnswers={userAnswers} />;
 
   const selectedValues = userAnswers[currentQuestion.id] || [];
 
   return (
-    <Card className="w-full max-w-lg">
+    <Card className="w-full max-w-2xl max-lg:max-w-md">
       <CardHeader>
-        <CardTitle>
+        <CardTitle className="text-lg">
           {quiz.title} - Question n°{currentQuestionIndex + 1}
         </CardTitle>
       </CardHeader>
-      <div className="flex items-center">
-        <Progress value={calculateProgress()} />
+      <div className="flex items-center w-full justify-evenly">
+        <Progress value={calculateProgress()} className="w-3/4" />
         <span>{Math.ceil(calculateProgress())}%</span>
       </div>
       <CardContent>
         <div className="my-4">
-          <p className="text-lg font-medium">{currentQuestion.content}</p>
-          <CardDescription>
+          <p className="font-medium pb-2 leading-tight">
+            {currentQuestion.content}
+          </p>
+          <CardDescription className="italic">
             {currentQuestion.type === "SINGLE"
               ? "Choisissez une seule réponse"
               : "Sélectionnez toutes les réponses correctes"}
@@ -136,7 +138,7 @@ const LoadedQuiz: FC<LoadedQuizProps> = ({ quiz, onFinish }) => {
           <ToggleGroup
             type="single"
             value={userAnswers[currentQuestion.id]?.[0] || ""}
-            className="space-y-4"
+            className=" space-x-4 py-3 w-4/5 mx-auto"
             onValueChange={(values) =>
               handleToggleChange(currentQuestion.id, [values])
             }
@@ -146,7 +148,7 @@ const LoadedQuiz: FC<LoadedQuizProps> = ({ quiz, onFinish }) => {
                 key={answer.id}
                 value={answer.id}
                 className={clsx(
-                  "w-full",
+                  "w-full cursor-pointer",
                   buttonVariants({
                     variant: "default",
                     size: "sm",
@@ -162,7 +164,7 @@ const LoadedQuiz: FC<LoadedQuizProps> = ({ quiz, onFinish }) => {
           <ToggleGroup
             type="multiple"
             value={selectedValues}
-            className="space-y-2"
+            className="w-full py-3 flex gap-4 max-lg:flex-col "
             onValueChange={(values) =>
               handleToggleChange(currentQuestion.id, values)
             }
@@ -172,7 +174,7 @@ const LoadedQuiz: FC<LoadedQuizProps> = ({ quiz, onFinish }) => {
                 key={answer.id}
                 value={answer.id}
                 className={clsx(
-                  "w-full",
+                  "w-full cursor-pointer max-lg:w-4/5",
                   buttonVariants({
                     variant: "default",
                     size: "sm",
@@ -186,9 +188,10 @@ const LoadedQuiz: FC<LoadedQuizProps> = ({ quiz, onFinish }) => {
           </ToggleGroup>
         )}
       </CardContent>
-      <CardFooter>
+      <CardFooter className="flex justify-end">
         <Button
           variant="destructive"
+          className="cursor-pointer"
           onClick={handleNextQuestion}
           disabled={!selectedValues.length}
         >
